@@ -2414,9 +2414,177 @@ int main() {
 
 **总结：**灵活的运用求子串功能，可以在实际开发中获取有效的信息
 
+#### 3.1.10 字符分类和转换
+
+需要包含头文件<cctype>
+
+| 函数名        | 功能描述                               | 示例                   |
+| ------------- | -------------------------------------- | ---------------------- |
+| `isalnum(c)`  | 是否为字母或数字                       | `'A'`, `'7'` → `true`  |
+| `isalpha(c)`  | 是否为字母（大小写都算）               | `'a'`, `'Z'` → `true`  |
+| `isdigit(c)`  | 是否为数字                             | `'0'`～`'9'` → `true`  |
+| `islower(c)`  | 是否为小写字母                         | `'a'`～`'z'` → `true`  |
+| `isupper(c)`  | 是否为大写字母                         | `'A'`～`'Z'` → `true`  |
+| `isspace(c)`  | 是否为空白字符（空格、制表符、换行等） | `' '`, `'\n'` → `true` |
+| `ispunct(c)`  | 是否为标点符号                         | `'.'`, `'!'` → `true`  |
+| `isxdigit(c)` | 是否为十六进制数字（0-9A-Fa-f）        | `'F'`, `'b'` → `true`  |
+| `tolower(c)`  | 转换为小写字母                         | `'A'` → `'a'`          |
+| `toupper(c)`  | 转换为大写字母                         | `'m'` → `'M'`          |
+
+> 所有函数参数都是 `int` 类型，**只能用于单个字符**，不能直接处理字符串。
+
+判断是不是字母：
+```cpp
+#include <iostream>
+#include <cctype>
+using namespace std;
+
+int main()
+{
+    char ch = 'A';
+
+    if (isalpha(ch))
+    {
+        cout << ch << " 是字母" << endl;
+    }
+
+    cout << "小写形式: " << char(tolower(ch)) << endl;
+    cout << "是否空格: " << isspace(' ') << endl;
+
+    return 0;
+}
+
+```
+统计大写字母数量：
+```cpp  
+#include <iostream>
+#include <string>
+#include <cctype>
+using namespace std;
+
+int main()
+{
+    string s;
+    getline(cin, s); // 允许输入带空格的字符串
+
+    int count = 0;
+
+    for (int i = 0; i < s.length(); i++)
+    {
+        if (isupper(s[i])) // 判断是否为大写字母
+        {
+            count++;
+        }
+    }
+
+    cout << "大写字母个数: " << count << endl;
+
+    return 0;
+}
+
+```
 
 
 
+**注意事项：**
+
+- 要包含头文件：`#include <cctype>`
+- 参数虽然是 `int`，但传入的是字符类型，如 `'A'`，字符本质是数字
+- 返回值是 `int`，为真或假，通常可直接用于 `if`
+- 不支持中文或 Unicode，只适用于 ASCII 字符
+
+
+
+#### 3.1.11 基于范围的for循环
+
+**基于范围的 `for` 循环（Range-based for loop）** 是 C++11 引入的一种更简洁、易读的循环写法，用于遍历容器（如数组、`string`、`vector` 等）中的所有元素。
+
+```cpp
+for (类型(直接写auto) 变量名 : 容器)
+{
+    // 使用变量名操作容器中的每个元素
+}
+```
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main()
+{
+    string s = "Hello";
+
+    for (auto c : s)
+    {
+        cout << c << ' ';//H e l l o
+    }
+
+    return 0;
+}
+```
+
+遍历数组
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int arr[] = {1, 2, 3, 4};
+
+    for (auto a : arr)
+    {
+        cout << a << ' ';//1 2 3 4
+    }
+
+    return 0;
+}
+```
+
+特点：
+
+| 优点                     | 说明                              |
+| ------------------------ | --------------------------------- |
+| 简洁                     | 不需要下标或迭代器                |
+| 自动处理容器大小         | 不需要 `s.length()` 或 `v.size()` |
+| 适用于所有支持遍历的容器 | 如 `string`、`vector`、数组等     |
+
+注意事项：
+
+- 默认是**按值传递**，如果你想修改元素，需要用引用：`for (int &x : arr)`
+- 不能用来遍历需要访问下标的位置（除非配合下标变量手动管理）
+
+例如3.1.10的统计大写字母数量
+
+```cpp
+#include <iostream>
+#include <string>
+#include <cctype>
+using namespace std;
+
+int main()
+{
+    string s;
+    getline(cin, s); // 支持含空格的字符串输入
+
+    int count = 0;
+
+    for (auto c : s) // 基于范围的 for 循环，逐个遍历字符
+    {
+        if (isupper(c)) // 判断是否是大写字母
+        {
+            count++;
+        }
+    }
+
+    cout << "大写字母个数: " << count << endl;
+
+    return 0;
+}
+
+```
 
 
 
