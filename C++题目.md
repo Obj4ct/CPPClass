@@ -1664,3 +1664,236 @@ int main()
 }
 ```
 
+#### 3.9 冒泡排序（一维数组）
+
+输入一个包含 `n` 个整数的一维数组，使用**冒泡排序算法**将其按**升序排列**，并输出排序后的结果。
+
+**输入格式：**
+
+第一行输入一个整数 `n`（`1 <= n <= 1000`），表示数组元素个数。
+
+第二行输入 `n` 个整数，表示数组的元素。
+
+**输出格式：**
+
+输出一行，包含排序后的一维数组元素，用空格分隔。
+
+**输入示例：**
+
+9 3 6 2 7
+
+**输出示例：**
+
+2 3 6 7 9
+
+```cpp
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int n;
+    cin >> n;
+
+    int a[1000];
+
+    for (int i = 0; i < n; i++) {
+        cin >> a[i];
+    }
+
+    // 冒泡排序
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - 1 - i; j++) {
+            if (a[j] > a[j + 1]) {
+                // 交换
+                int temp = a[j];
+                a[j] = a[j + 1];
+                a[j + 1] = temp;
+            }
+        }
+    }
+
+    // 输出排序后的数组
+    for (int i = 0; i < n; i++) {
+        cout << a[i]<< " ";
+    }
+
+    cout << endl;
+    return 0;
+}
+
+```
+
+#### 3.10 密码合规
+
+网站注册需要有用户名和密码，编写程序以检查用户输入密码的有效性。合规的密码应满足以下要求 :。
+
+1. 只能由 a∼z 之间 26 个小写字母、A∼Z 之间 26 个大写字母、0∼9 之间 10 个数字以及 `!@#$` 四个特殊字符构成。
+
+2. 密码最短长度 :6 个字符，密码最大长度 :12 个字符。
+
+3. 大写字母，小写字母和数字必须至少有其中两种，以及至少有四个特殊字符中的一个。
+
+**输入格式**：
+
+输入一行不含空格的字符串。约定长度不超过 100。该字符串被英文逗号分隔为多段，作为多组被检测密码。
+
+**输出格式**：
+
+输出若干行，每行输出一组合规的密码。输出顺序以输入先后为序，即先输入则先输出。
+
+**样例**
+
+**输入**:
+
+```
+seHJ12!@,sjdkffH$123,sdf!@&12HDHa!,123&^YUhg@!
+```
+
+**输出 **:
+
+```
+seHJ12!@
+sjdkffH$123
+```
+
+**说明/提示**
+
+【样例解释】
+
+输入被英文逗号分为了四组被检测密码：`seHJ12!@`、`sjdkffH$123`、`sdf!@&12HDHa!`、`123&^YUhg@!`。其中 `sdf!@&12HDHa!` 长度超过 12 个字符，不合规；`123&^YUhg@!` 包含四个特殊字符之外的字符不合规。
+
+size_t 是 C 和 C++ 中一个无符号整数类型，专门用来表示对象的大小、数组的下标、内存容量等。你可以理解为是专门为“大小”和“计数”设计的类型
+
+解法一，使用cctype:
+
+```cpp
+#include <iostream>
+#include <string>
+#include <cctype> // 使用 isdigit, islower, isupper 等函数
+using namespace std;
+
+// 判断字符是否是允许的合法字符
+bool is_valid_char(char ch)
+{
+    return isalnum(ch) || ch == '!' || ch == '@' || ch == '#' || ch == '$';
+}
+
+// 判断一个密码是否合规
+bool is_valid_password(const string &pwd)
+{
+    // 长度必须在 6 到 12 之间
+    if (pwd.length() < 6 || pwd.length() > 12) return false;
+
+    bool has_lower = false, has_upper = false, has_digit = false, has_special = false;
+
+    for (char ch : pwd) {
+        // 如果有非法字符，直接返回 false
+        if (!is_valid_char(ch)) return false;
+
+        // 判断字符类型
+        if (islower(ch)) has_lower = true;
+        else if (isupper(ch)) has_upper = true;
+        else if (isdigit(ch)) has_digit = true;
+        else if (ch == '!' || ch == '@' || ch == '#' || ch == '$') has_special = true;
+    }
+
+    // 至少有 大小写/数字 中的两种 + 一个特殊字符
+    int type_count = (has_lower + has_upper + has_digit);
+    return type_count >= 2 && has_special;
+}
+
+int main()
+{
+    string input;
+    getline(cin, input); // 获取整行输入（包含多个密码，用逗号分隔）
+
+    string temp; // 存储当前处理的密码
+    for (size_t i = 0; i <= input.length(); ++i) {
+        // 如果到了末尾或遇到逗号，处理 temp 中的密码
+        if (i == input.length() || input[i] == ',') {
+            if (!temp.empty() && is_valid_password(temp)) {
+                cout << temp << endl; // 输出合法密码
+            }
+            temp.clear(); // 清空，为下一个密码做准备
+        }
+        else {
+            temp += input[i]; // 拼接字符到当前密码
+        }
+    }
+
+    return 0;
+}
+
+```
+
+解法二，不用cctype：
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+// 判断是否是数字字符
+bool is_digit(char ch) {
+    return ch >= '0' && ch <= '9';
+}
+
+// 判断是否是小写字母
+bool is_lower(char ch) {
+    return ch >= 'a' && ch <= 'z';
+}
+
+// 判断是否是大写字母
+bool is_upper(char ch) {
+    return ch >= 'A' && ch <= 'Z';
+}
+
+// 判断是否是合法字符：数字、小写、大写、特殊符号 !@#$
+bool is_valid_char(char ch) {
+    return is_digit(ch) || is_lower(ch) || is_upper(ch) || ch == '!' || ch == '@' || ch == '#' || ch == '$';
+}
+
+// 判断密码是否合规
+bool is_valid_password(const string &pwd)
+{
+    if (pwd.length() < 6 || pwd.length() > 12) return false;
+
+    bool has_lower = false, has_upper = false, has_digit = false, has_special = false;
+
+    for (char ch : pwd) {
+        if (!is_valid_char(ch)) return false;
+
+        if (is_lower(ch)) has_lower = true;
+        else if (is_upper(ch)) has_upper = true;
+        else if (is_digit(ch)) has_digit = true;
+        else if (ch == '!' || ch == '@' || ch == '#' || ch == '$') has_special = true;
+    }
+
+    int count = (has_lower + has_upper + has_digit);
+    return count >= 2 && has_special;
+}
+
+int main()
+{
+    string input;
+    getline(cin, input); // 输入多个密码，英文逗号分隔
+
+    string temp; // 临时存储单个密码
+    for (size_t i = 0; i <= input.length(); ++i) {
+        if (i == input.length() || input[i] == ',') {
+            if (!temp.empty() && is_valid_password(temp)) {
+                cout << temp << endl; // 输出合规密码
+            }
+            temp.clear(); // 重置临时密码
+        }
+        else {
+            temp += input[i]; // 继续拼接字符
+        }
+    }
+
+    return 0;
+}
+
+```
+
