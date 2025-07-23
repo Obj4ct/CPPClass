@@ -876,7 +876,7 @@ int main()
 }
 ```
 
-#### 3.4 字符串排序
+#### 3.4 字符串排序（多个字符串）
 
 将m个字符串按照以下规则排序：
 
@@ -1860,8 +1860,8 @@ int main()
     }
 
     // 冒泡排序
-    for (int i = 0; i < n - 1; i++) {
-        for (int j = 0; j < n - 1 - i; j++) {//j < n - 1 - i 是为了 跳过已排好部分，提高效率；避免无用比较；若写成 j < n - 1，虽然不影响最终排序结果，但会多比较无意义的部分，效率更低。
+    for (int i = 0; i < n - 1; i++) {	// 控制排序的轮数，总共进行 n-1 轮 因为每一轮都把一个最大的值冒到后面，只需要比较 n-1 轮就够了
+        for (int j = 0; j < n - 1 - i; j++) {//j < n - 1 - i 是为了 跳过已排好部分，提高效率,因为每轮都会确定一个最大的数放到最后，所以不必再去比较已经排好序的尾部,避免无用比较；若写成 j < n - 1，虽然不影响最终排序结果，但会多比较无意义的部分，效率更低。
             if (a[j] > a[j + 1]) {
                 // 交换
                 int temp = a[j];
@@ -2120,4 +2120,127 @@ int main()
 }
 
 ```
+
+#### 3.12 字符串排序（单个字符串）
+
+将一个字符串里面的值从小到大的规则排序。
+
+把排序后的字符串输出出来。
+
+**输入描述**
+
+只有一组案例。
+
+输入一个字符串
+
+**输出描述**
+
+按照指定要求排序后，把排序后的字符串输出出来
+
+**样例输入**
+
+54321
+
+**样例输出**
+
+12345
+
+
+
+**样例输入**
+
+HELLO
+
+**样例输出**
+
+EHLLO
+
+方法一：
+
+冒泡排序
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main()
+{
+    string s = "HELLO";
+
+    // 冒泡排序
+    for (int i = 0; i < s.length() - 1; i++) {
+        for (int j = 0; j < s.length() - 1 - i; j++) {
+            if (s[j] > s[j + 1]) {
+                // 交换字符
+                char temp = s[j];
+                s[j] = s[j + 1];
+                s[j + 1] = temp;
+            }
+        }
+    }
+
+    cout << s << endl;
+    return 0;
+}
+
+```
+
+方法二：
+
+sort函数
+
+```cpp
+#include <iostream>
+#include <algorithm> // sort头文件
+#include <string>
+using namespace std;
+
+int main()
+{
+    string s = "HELLO";
+    sort(s.begin(), s.end()); // 默认升序排序  
+    						  //降序需要包含 <algorithm>  sort(s.begin(), s.end(), greater<char>());
+    cout << s << endl; // 输出排序后的字符串
+    return 0;
+}
+
+```
+
+**sort函数也可以用在静态数组**
+
+同样需要包含<algorithm>
+
+```cpp
+#include <iostream>
+#include <algorithm> // sort函数需要这个头文件
+using namespace std;
+
+int main()
+{
+    int a[] = {5, 2, 9, 1, 3};
+    int n = sizeof(a) / sizeof(a[0]); // 计算数组长度
+
+    sort(a, a + n); // 对数组从小到大排序 从大到小 sort(a, a + n, greater<int>());
+
+    for (int i = 0; i < n; i++) {
+        cout << a[i] << " "; // 1 2 3 5 9
+    }
+
+    return 0;
+}
+
+
+```
+
+这是对 **数组 `a` 中的前 `n` 个元素**进行排序。
+
+| 参数    | 解释                                       |
+| ------- | ------------------------------------------ |
+| `a`     | 指向数组起始元素的指针（即第一个元素）     |
+| `a + n` | 指向数组最后一个元素“后面”的位置（不包含） |
+
+
+
+> `sort(begin, end)` 是 **左闭右开区间**：排序的是 `[a, a + n)`。
 
