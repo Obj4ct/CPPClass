@@ -1452,6 +1452,10 @@ apple
 
 对于所有测试点，1≤n≤100 ， 每个单词的长度不超过30， 且仅由大小写英文字母组成
 
+方法一：
+
+map容器：
+
 ```cpp
 #include <iostream>
 #include <string>
@@ -1597,6 +1601,83 @@ int main()
 }
 ```
 
+方法二：
+
+字符串静态数组：
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+int toLowerStr(string &s)
+{
+    // 遍历字符串中的每一个字符
+    for (int i = 0; i < s.length(); ++i)
+    {
+        // 如果字符是大写字母
+        if (s[i] >= 'A' && s[i] <= 'Z')
+        {
+            s[i] = s[i] - 'A' + 'a'; // 转小写
+        }
+    }
+    return 0;
+}
+
+int main()
+{
+    int n;
+    cin >> n; // 输入单词数量
+
+    const int MAX = 100;
+    string words[MAX];     // 存储单词
+    int count[MAX] = {0};  // 存储每个单词的出现次数
+    int unique_count = 0;  // 当前不同单词的数量
+
+    for (int i = 0; i < n; ++i)
+    {
+        string temp;
+        cin >> temp; // 输入单词
+        toLowerStr(temp); // 转为小写
+
+        bool found = false;
+        for (int j = 0; j < unique_count; ++j)
+        {
+            if (words[j] == temp) // 如果单词已经存在
+            {
+                count[j]++; // 出现次数加1
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) // 如果单词不存在
+        {
+            words[unique_count] = temp; // 存储单词
+            count[unique_count] = 1; // 出现次数为1
+            unique_count++; // 不同单词数量加1
+        }
+    }
+
+    // 找出出现次数最多的单词
+    int maxIndex = 0;
+    for (int i = 1; i < unique_count; ++i)
+    {
+        if (count[i] > count[maxIndex]) // 如果当前单词出现次数大于最大出现次数
+        {
+            maxIndex = i; // 更新最大出现次数的单词索引
+        }
+    }
+
+    cout << words[maxIndex] << endl; // 输出出现次数最多的单词
+
+    return 0;
+}
+
+```
+
+
+
 #### 3.8 奇怪的键盘
 
 小苏同学有一个文本编辑器和一个奇怪的键盘。这个键盘有 26 个小写英文字母和退格键(backspace)，一共 27 个键。
@@ -1663,6 +1744,83 @@ int main()
     return 0;
 }
 ```
+
+方法三：
+
+字符串动态数组：
+
+```cpp
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+// 把一个字符串转换成小写
+// 将字符串s中的所有大写字母转换为小写字母
+void toLowerStr(string &s)
+{
+    // 遍历字符串s中的每个字符
+    for (char &ch : s)
+    {
+        // 如果字符是大写字母
+        if (ch >= 'A' && ch <= 'Z')
+        {
+            // 将大写字母转换为小写字母
+            ch = ch - 'A' + 'a';
+        }
+    }
+}
+
+int main()
+{
+    int n;
+    cin >> n;  // 输入单词个数
+
+    vector<string> words;  // 存储不重复的单词
+    vector<int> counts;    // 对应的出现次数
+
+    for (int i = 0; i < n; ++i)
+    {
+        string temp;
+        cin >> temp;  // 输入单词
+        toLowerStr(temp);  // 转为小写
+
+        bool found = false;
+        for (int j = 0; j < words.size(); ++j)
+        {
+            if (words[j] == temp)
+            {
+                counts[j]++;  // 单词已存在，出现次数加1
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            words.push_back(temp);  // 单词不存在，添加到words中
+            counts.push_back(1);  // 出现次数为1
+        }
+    }
+
+    // 找出出现次数最多的单词
+    int maxIndex = 0;
+    for (int i = 1; i < counts.size(); ++i)
+    {
+        if (counts[i] > counts[maxIndex])
+        {
+            maxIndex = i;
+        }
+    }
+
+    cout << words[maxIndex] << endl;  // 输出出现次数最多的单词
+
+    return 0;
+}
+
+```
+
+
 
 #### 3.9 冒泡排序（一维数组）
 
@@ -1890,6 +2048,72 @@ int main()
         else {
             temp += input[i]; // 继续拼接字符
         }
+    }
+
+    return 0;
+}
+
+```
+
+#### 3.11 变成回文字符串
+
+小陈在背英语单词时，特别喜欢回文字符串。一个字符串如果正着读和反着读一样，那么它就是回文字符串。
+小陈可以通过修改字符串中的某些字符，使得字符串变成回文字符串。每次可以选择把一个位置上的字母修改成另一个字母。
+问:至少需要多少次修改，才能把一个字符串改成回文字符串?
+**输入描述:**
+一个正整数n，表示有n组案例。
+每组案例包含一个不含空格的字符串(大小写敏感)。
+**输出描述:**
+针对每组案例，输出最少变换次数。
+每组案例输出完都要换行。
+**样例输入:**
+3
+ababa
+abaaa
+aabbbb
+**样例输出:**
+0
+1
+2
+**解释:**
+*ababa是回文字符串，不需要修改。*
+*abaaa不是回文字符串，但是可以通过修改最后一个字符，变成回文字符串*
+*aabbbb不是回文字符串，但是可以通过修改两个字符，变成回文字符串。*
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+// 计算将字符串变为回文字符串所需的最小修改次数
+int minChangesToPalindrome(string s)
+{
+    int count = 0;
+    int len = s.length();
+
+    // 双指针比较左右字符
+    for (int i = 0; i < len / 2; ++i)
+    {
+        if (s[i] != s[len - 1 - i])
+        {
+            count++; // 只要一对不等，就需要一次修改
+        }
+    }
+
+    return count;
+}
+
+int main()
+{
+    int n;
+    cin >> n; // 输入组数
+    string str;
+
+    // 逐组处理
+    for (int i = 0; i < n; ++i)
+    {
+        cin >> str;
+        cout << minChangesToPalindrome(str) << endl;
     }
 
     return 0;
