@@ -4730,7 +4730,63 @@ void test01()
 
 ## 5 文件操作
 
+### 5.1绝对路径相对路径
 
+绝对路径和相对路径是计算机中用来定位文件或目录的两种方式，它们最核心的区别在于**参照点不同**。
+
+#### 5.1.1 绝对路径
+
+绝对路径是**从根目录开始的完整路径**。无论你当前身处哪个位置，绝对路径都是固定的，它能准确无误地指向文件或目录。
+
+- **特点**：
+  - **完整性**：总是从文件系统的最顶层（根目录）开始。
+  - **独立性**：不受当前所在位置的影响。
+- **例子**：
+  - 在Windows系统中：`C:\Users\Admin\Documents\file.txt`
+  - 在Linux/macOS系统中：`/home/user/Documents/file.txt`
+
+#### 5.1.2 相对路径
+
+相对路径是**从当前工作目录开始的路径**。它根据你当前所在的位置来确定文件或目录的位置。
+
+- **特点**：
+  - **简短性**：通常比绝对路径更短。
+  - **依赖性**：必须知道当前位置才能正确解析。
+- **特殊符号**：
+  - `.`：表示**当前目录**。
+  - `..`：表示**上一级目录**（父目录）。
+- **例子**：
+  - 假设你当前在 `/home/user/` 目录下：
+    - 要访问 `Documents/file.txt`，相对路径就是 `Documents/file.txt`。
+    - 要访问 `Downloads/image.jpg`，相对路径就是 `../Downloads/image.jpg`
+
+**总结**
+
+- **绝对路径**就像一个**详细的家庭住址**：`中国北京市海淀区中关村大街1号`，无论你在哪里，这个地址都是固定的。
+- **相对路径**就像一个**指示方向**：`右转直走50米`，这个指示必须基于你当前所在的位置才能生效
+
+**Windows下相对路径的规则**
+
+- **当前目录 `.`**
+  - `.\folder\file.txt`：表示当前目录下的 `folder` 文件夹中的 `file.txt` 文件。通常，如果直接写 `folder\file.txt`，`.\` 可以省略。
+- **上一级目录 `..`**
+  - `..\folder\file.txt`：表示当前目录的上一级目录下的 `folder` 文件夹中的 `file.txt` 文件。
+
+**例子**
+
+假设你当前的工作目录是 `C:\Users\Admin\Documents`。
+
+- **`.\notes\meeting.doc`**
+  - 这会指向 `C:\Users\Admin\Documents\notes\meeting.doc`。
+- **`..\Downloads\photo.jpg`**
+  - `..` 表示上一级目录，即 `C:\Users\Admin`。
+  - 所以，这会指向 `C:\Users\Admin\Downloads\photo.jpg`。
+- **`..\..\project\main.cpp`**
+  - 第一个 `..` 到达 `C:\Users`。
+  - 第二个 `..` 到达 `C:\`。
+  - 所以，这会指向 `C:\project\main.cpp`
+
+### 5.2文本文件
 
 程序运行时产生的数据都属于临时数据，程序一旦运行结束都会被释放
 
@@ -4753,11 +4809,7 @@ C++中对文件操作需要包含头文件 ==&lt; fstream &gt;==
 2. ifstream： 读操作
 3. fstream ： 读写操作
 
-
-
-### 5.1文本文件
-
-#### 5.1.1写文件
+#### 5.2.1写文件
 
    写文件步骤如下：
 
@@ -4841,19 +4893,7 @@ int main() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-#### 5.1.2读文件
+#### 5.2.2读文件
 
 
 
@@ -4963,7 +5003,7 @@ int main() {
 
 
 
-### 5.2 二进制文件
+### 5.3 二进制文件
 
 以二进制的方式对文件进行读写操作
 
@@ -4971,7 +5011,7 @@ int main() {
 
 
 
-#### 5.2.1 写文件
+#### 5.3.1 写文件
 
 二进制方式写文件主要利用流对象调用成员函数write
 
@@ -4979,7 +5019,9 @@ int main() {
 
 参数解释：字符指针buffer指向内存中一段存储空间。len是读写的字节数
 
+二进制文件写入，可能会出现乱码
 
+只要读取正确，就行
 
 **示例：**
 
@@ -5030,6 +5072,7 @@ int main() {
 
 
 
+注意：二进制写文件，最好别用string 因为**可能**会出现问题（指针异常）
 
 
 
@@ -5038,7 +5081,8 @@ int main() {
 
 
 
-#### 5.2.2 读文件
+
+#### 5.3.2 读文件
 
 二进制方式读文件主要利用流对象调用成员函数read
 
@@ -5087,7 +5131,7 @@ int main() {
 
 - 文件输入流对象 可以通过read函数，以二进制方式读数据
 
-### 5.3 文件分类
+### 5.4 文件分类
 
 **1. 按编码方式分类**
 
@@ -5129,3 +5173,101 @@ int main() {
 - **Windows**：使用回车符和换行符（Carriage Return + Line Feed, `\r\n`）来表示一行结束。
 - **Unix/Linux**：只使用换行符（Line Feed, `\n`）。
 - **Mac OS (旧版本)**：只使用回车符（Carriage Return, `\r`）。
+
+### 5.5 C语言方式读写
+
+#### 5.5.1 写文件
+
+`freopen()` 函数用于将一个已打开的流（如 `stdin`、`stdout`、`stderr`）重定向到另一个文件。他的函数原型为：
+
+```cpp
+FILE *freopen(const char *filename, const char *mode, FILE *stream);
+```
+
+- `filename`: 要打开或重定向到的文件名。
+- `mode`: 文件打开模式，与 `fopen()` 相同，例如 `"r"` (读), `"w"` (写), `"a"` (追加)。
+- `stream`: 要重定向的流，通常是 `stdin`（标准输入）或 `stdout`（标准输出）。
+
+`freopen()` 的好处是，你可以在代码中使用 `scanf()` 和 `printf()` 这样的标准输入/输出函数，而无需改变代码逻辑，它们会自动从文件中读取或写入。
+
+要将内容写入文件，你需要将 `stdout` 重定向到你的文件。
+
+```cpp
+#include <cstdio> // 包含freopen和fprintf
+
+int main()
+{
+    // 将stdout重定向到"output.txt"文件，以写入模式打开
+    // 如果文件不存在，会创建一个新文件；如果文件存在，会清空内容
+    freopen("output.txt", "w", stdout);
+
+    int a = 10;
+    double b = 2.5;
+    const char* str = "Hello, world!";
+
+    // 使用fprintf写入数据，效果与printf类似
+    // 这些内容将被写入到"output.txt"文件中
+    fprintf(stdout, "整数: %d\n", a);
+    fprintf(stdout, "浮点数: %.1f\n", b);
+    fprintf(stdout, "字符串: %s\n", str);
+
+    // 关闭文件（不调用fclose，程序结束时也会自动关闭）
+    // freopen("CON", "w", stdout); // 可选：重定向回控制台
+
+    return 0;
+}
+```
+运行这段代码后，会在当前目录下生成一个名为 `output.txt` 的文件，内容如下：
+
+```
+整数: 10
+浮点数: 2.5
+字符串: Hello, world!
+```
+
+#### 5.5.2 读文件
+
+要从文件中读取内容，你需要将 `stdin` 重定向到你的文件。
+
+假设你有一个名为 `input.txt` 的文件，内容如下：
+
+```
+123 45.67 C++
+```
+读取：
+```cpp
+#include <cstdio> // 包含freopen和fscanf
+
+int main()
+{
+    // 将stdin重定向到"input.txt"文件，以读取模式打开
+    freopen("input.txt", "r", stdin);
+
+    int a;
+    double b;
+    char c[50]; // 足够大的缓冲区来存放字符串
+
+    // 使用fscanf从文件中读取数据，效果与scanf类似
+    // fscanf会按照格式字符串从文件中读取数据
+    fscanf(stdin, "%d %lf %s", &a, &b, c);
+
+    // 输出读取到的数据到控制台
+    fprintf(stdout, "读取到的整数: %d\n", a);
+    fprintf(stdout, "读取到的浮点数: %.2f\n", b);
+    fprintf(stdout, "读取到的字符串: %s\n", c);
+    
+    // 关闭文件（不调用fclose，程序结束时也会自动关闭）
+    // freopen("CON", "r", stdin); // 可选：重定向回控制台
+
+    return 0;
+}
+```
+
+运行这段代码后，控制台会输出：
+
+```
+读取到的整数: 123
+读取到的浮点数: 45.67
+读取到的字符串: C++
+```
+
