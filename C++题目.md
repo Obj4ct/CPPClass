@@ -2379,6 +2379,375 @@ int main()
 
 > `sort(begin, end)` 是 **左闭右开区间**：排序的是 `[a, a + n)`。
 
+
+
+### 四级
+
+#### 4.1 画布裁剪
+
+小 A 在高为 *h* 宽为 *w* 的矩形画布上绘制了一幅画。由于画布边缘留白太多，小 A 想适当地裁剪画布，只保留画的主体。具体来说，画布可以视为 *h* 行 *w* 列的字符矩阵，其中的字符均为 ASCII 码位于 33∼126 之间的可见字符，小 A 只保留画布中由第 *x*1 行到第 *x*2 行、第 *y*1 列到第 *y*2 列构成的子矩阵。
+
+小 A 将画布交给了你，你能帮他完成画布的裁剪吗？
+
+**输入格式**
+
+第一行，两个正整数 *h*,*w*，分别表示画布的行数与列数。
+
+第二行，四个正整数 *x*1,*x*2,*y*1,*y*2，表示保留的行列边界。
+
+接下来 *h* 行，每行一个长度为 *w* 的字符串，表示画布内容。
+
+**输出格式**
+
+输出共 *x*2−*x*1+1 行，每行一个长度为 *y*2−*y*1+1 的字符串，表示裁剪后的画布。
+
+
+
+**输入样例**
+
+3 5
+	2 2 2 4
+	.....
+	.>_<.
+	.....
+
+**输出样例 **
+
+ >__<
+
+
+
+**输入样例**
+
+5 5
+	1 2 3 4
+	AbCdE
+	fGhIk
+	LmNoP
+	qRsTu
+	VwXyZ
+
+**输出样例**
+
+Cd
+	hI
+
+
+
+方法一：静态二维数组
+
+缺点，数组大小编译时需要确定
+
+```cpp
+#include <iostream>
+#include <string>
+
+int main()
+{
+    // 假设画布的最大尺寸是 100x100
+    // 数组的大小必须是编译时已知的常量
+    const int MAX_H = 100;
+    const int MAX_W = 100;
+    
+    // 使用静态二维数组
+    char canvas[MAX_H][MAX_W];
+    
+    int h, w;
+    std::cin >> h >> w;
+
+    int x1, x2, y1, y2;
+    std::cin >> x1 >> x2 >> y1 >> y2;
+    
+    // 逐个字符读取画布内容
+    for (int i = 0; i < h; ++i)
+    {
+        for (int j = 0; j < w; ++j)
+        {
+            std::cin >> canvas[i][j];
+        }
+    }
+
+    // 遍历并输出裁剪后的子矩阵
+    for (int i = x1 - 1; i < x2; ++i)
+    {
+        for (int j = y1 - 1; j < y2; ++j)
+        {
+            std::cout << canvas[i][j];
+        }
+        std::cout << std::endl;
+    }
+
+    return 0;
+}
+```
+
+方法二：
+
+动态数组
+
+```cpp
+#include <iostream>
+#include <vector>
+
+int main()
+{
+    // 定义画布的行和列
+    int h, w;
+    std::cin >> h >> w;
+
+    // 定义裁剪的边界
+    int x1, x2, y1, y2;
+    std::cin >> x1 >> x2 >> y1 >> y2;
+    
+    // 创建一个二维向量来存储画布内容
+    //创建h个数，每个数都是动态数组
+    std::vector<std::vector<char>> canvas(h, std::vector<char>(w));
+    for (int i = 0; i < h; ++i)
+    {
+        for (int j = 0; j < w; ++j)
+        {
+            std::cin >> canvas[i][j];
+        }
+    }
+
+    // 遍历并输出裁剪后的子矩阵
+    for (int i = x1 - 1; i < x2; ++i)
+    {
+        for (int j = y1 - 1; j < y2; ++j)
+        {
+            std::cout << canvas[i][j];
+        }
+        std::cout << std::endl;
+    }
+
+    return 0;
+}
+```
+
+**如果 `vector` 已经预先分配了空间**（例如 `std::vector<char> row(w);`），可以使用 `cin >> row[j];` 来**赋值**。
+
+**如果 `vector` 还是空的**，你需要使用 `push_back` 来**添加**新的元素。
+
+
+
+#### 4.2 排序
+
+体育课上有 n 名同学排成一队，从前往后数第 i 位同学的身高为 h<sub>i</sub>，体重为 w<sub>i</sub>。目前排成的队伍看起来参差不齐，老师希望同学们能按照身高从高到低的顺序排队，如果身高相同则按照体重从重到轻排序。在调整队伍时，每次只能交换相邻两位同学的位置。老师想知道，最少需要多少次交换操作，才能将队伍调整成目标顺序。
+
+**输入格式：**
+
+第一行，一个正整数 *n*，表示队伍人数。
+
+接下来 *n* 行，每行两个正整数 h<sub>i</sub>和 w<sub>i</sub>，分别表示第 *i* 位同学的身高和体重。
+
+**输出格式：**
+
+输出一行，一个整数，表示最少需要的交换次数。
+
+**输入：**
+
+5
+	1 60
+	3 70
+	2 80
+	4 55
+	4 50
+
+**输出：**
+
+8
+
+
+
+**输入**：
+
+5
+	4 0
+	4 0
+	2 0
+	3 0
+	1 0
+
+**输出：**
+
+1
+
+
+
+逆序对：
+
+逆序对是序列中一对不符合**排序规则**的元素。在计算机科学和数学中，如果一个序列中的两个元素，它们在位置上是“前”和“后”的关系，但在大小上却是“大”和“小”的关系，那么它们就构成了一个逆序对。
+
+要定义逆序对，你需要首先确定一个排序规则（例如，升序或降序）。
+
+- 对于**升序**排序：如果 ai 在 aj 前面，但 ai>aj，那么 (ai,aj) 就是一个逆序对。
+- 对于**降序**排序：如果 ai 在 aj 前面，但 ai<aj，那么 (ai,aj) 就是一个逆序对。
+
+对组：
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <utility>
+
+int main()
+{
+    // 定义队伍人数
+    int n;
+    std::cin >> n;
+
+    // 使用vector<pair<int, int>>存储同学信息
+    std::vector<std::pair<int, int>> students(n);
+    for (int i = 0; i < n; ++i)
+    {
+        // pair.first 存储身高，pair.second 存储体重
+        std::cin >> students[i].first >> students[i].second;
+    }
+
+    // 初始化逆序对计数器
+    int inversions = 0;
+
+    // 遍历所有可能的学生对 (i, j)
+    for (int i = 0; i < n; ++i)
+    {
+        for (int j = i + 1; j < n; ++j)
+        {
+            // 判断是否构成逆序对
+            // 逆序对是指：i 在 j 前面，但 i 应该在排序后排在 j 后面
+            // 这意味着：
+            // 1. i 的身高比 j 矮 (即 i.height < j.height)
+            // 2. 或者 i 和 j 身高相同，但 i 的体重比 j 轻 (即 i.weight < j.weight)
+            if (students[i].first < students[j].first || (students[i].first == students[j].first && students[i].second < students[j].second))
+            {
+                inversions++;
+            }
+        }
+    }
+
+    std::cout << inversions << std::endl;
+
+    return 0;
+}
+```
+
+
+
+#### 4.3 Recamán
+
+小杨最近发现了有趣的 Recamán 数列，这个数列是这样生成的：
+
+- 数列的第一项 $a_1$ 是 $1$；
+- 如果 $a_{k-1}-k$ 是正整数并且没有在数列中出现过，那么数列的第 $k$ 项 $a_k$ 为 $a_{k-1}-k$，否则为 $a_{k-1}+k$。
+
+小杨想知道 Recamán 数列的前 $n$ 项从小到大排序后的结果。手动计算非常困难，小杨希望你能帮他解决这个问题。
+
+输入格式
+
+第一行，一个正整数 $n$。
+
+输出格式
+
+一行，$n$ 个空格分隔的整数，表示 Recamán 数列的前 $n$ 项从小到大排序后的结果。
+
+输入 #1
+
+```
+5
+```
+
+输出 #1
+
+```
+1 2 3 6 7
+```
+
+输入 #2
+
+```
+8
+```
+
+输出 #2
+
+```
+1 2 3 6 7 12 13 20
+```
+
+样例解释
+
+对于样例 1，$n=5$：
+- $a_1=1$；
+- $a_1-2=-1$，不是正整数，因此 $a_2=a_1+2=3$；
+- $a_2-3=0$，不是正整数，因此 $a_3=a_2+3=6$；
+- $a_3-4=2$，是正整数，且没有在数列中出现过，因此  $a_4=a_3-4=2$；
+- $a_4-5=-3$，不是正整数，因此 $a_5=a_4+5=7$。
+
+$a_1,a_2,a_3,a_4,a_5$ 从小到大排序的结果为 $1,2,3,6,7$。
+
+对于所有数据点，保证 $1\le n\le 3\, 000$​。
+
+
+
+```cpp
+#include <iostream>   // 输入输出
+#include <vector>     // 动态数组 vector
+#include <algorithm>  // sort 排序
+
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;  // 输入要求生成的项数 n
+
+    // 用数组 a 存储 Recamán 数列，a[1] ~ a[n]
+    // 注意开 n+1 的空间，因为我们从下标 1 开始存
+    vector<int> a(n + 1);
+
+    // 用布尔数组 vis 来标记某个数是否已经在数列中出现过
+    // 题目保证 n ≤ 3000，而 Recamán 数列增长比较快，这里预留到 1000000
+    vector<bool> vis(1000000, false);
+
+    // 数列的第一项固定是 1
+    a[1] = 1;
+    vis[1] = true; // 标记 1 已经出现过
+
+    // 从第 2 项开始依次递推
+    for (int k = 2; k <= n; k++) {
+        // 按照规则：尝试做减法
+        int candidate = a[k - 1] - k;
+
+        // 如果 candidate 是正数，并且没有出现过
+        if (candidate > 0 && !vis[candidate]) {
+            a[k] = candidate; // 用减法得到的新数
+        } else {
+            // 否则用加法
+            a[k] = a[k - 1] + k;
+        }
+
+        // 无论是加还是减，得到的新数都要标记为“出现过”
+        vis[a[k]] = true;
+    }
+
+    // 取出数列的前 n 项 (去掉下标 0 的位置)
+    vector<int> result(a.begin() + 1, a.begin() + n + 1);
+
+    // 将结果排序
+    sort(result.begin(), result.end());
+
+    // 按要求格式输出（空格分隔）
+    for (int i = 0; i < n; i++) {
+        if (i) cout << " ";   // 控制空格输出（第一个数前面不加空格）
+        cout << result[i];
+    }
+    cout << "\n"; // 换行
+
+    return 0; // 程序结束
+}
+
+```
+
+
+
 ### 其他题目
 
 #### 1.最高成绩
